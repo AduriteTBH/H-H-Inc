@@ -3,95 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Custom Landing Page</title>
+    <title>Dashboard</title>
     <style>
-        /* Basic styling for a clean, centered landing page */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
             background-color: #f4f4f9;
             color: #333;
-        }
-
-        .container {
             text-align: center;
+            padding: 40px;
+        }
+
+        /* Creates a neat grid for your games */
+        .game-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .game-card {
             background: #fff;
-            padding: 40px 60px;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 220px;
         }
 
-        h1 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
+        h3 { margin-top: 0; color: #2c3e50; }
 
-        p {
-            color: #666;
-            margin-bottom: 30px;
-        }
-
-        /* Styling the launch button */
         .launch-btn {
             background-color: #007bff;
             color: white;
             border: none;
-            padding: 15px 30px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            width: 100%;
+            transition: 0.3s;
         }
 
-        .launch-btn:hover {
-            background-color: #0056b3;
-        }
+        .launch-btn:hover { background-color: #0056b3; }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1>Welcome to My Site</h1>
-        <p>Click the button below to launch the content in a secure, full-screen tab.</p>
+    <h1>Study Modules</h1>
+    <p>Select a module below to launch.</p>
+    
+    <div class="game-grid">
         
-        <button class="launch-btn" onclick="openAboutBlank()">Launch Content</button>
-    </div>
+        <div class="game-card">
+            <h3>Math Blaster</h3>
+            <button class="launch-btn" onclick="launchGame('game1.html')">Launch</button>
+        </div>
+
+        <div class="game-card">
+            <h3>History Quiz</h3>
+            <button class="launch-btn" onclick="launchGame('game2.html')">Launch</button>
+        </div>
+
+        </div>
 
     <script>
-        function openAboutBlank() {
-            // 1. Open a new about:blank window/tab
-            let win = window.open('about:blank', '_blank');
-
-            // 2. Define your embed code here. 
-            // Note: Use backticks (`) around your code so you can safely use regular quotes inside it.
-            let embedCode = `
-                <iframe 
-                    src="https://www.example.com" 
-                    style="position:absolute; top:0; left:0; width:100%; height:100%; border:none; margin:0; padding:0;" 
-                    allowfullscreen>
-                </iframe>
-            `;
-
-            // 3. Write the code into the new about:blank window
-            if (win) {
-                // Remove default margins/padding from the about:blank body
-                win.document.body.style.margin = "0";
-                win.document.body.style.padding = "0";
+        // This function fetches the file from the 'studies' folder and opens it
+        async function launchGame(filename) {
+            try {
+                // 1. Fetch the HTML content from the studies folder
+                const response = await fetch('studies/' + filename);
                 
-                // Write the embed code and close the document stream
-                win.document.write(embedCode);
-                win.document.close();
+                if (!response.ok) {
+                    throw new Error('File not found');
+                }
                 
-                // Optional: Change the title of the about:blank tab to hide it further
-                win.document.title = "Dashboard"; 
-            } else {
-                alert("Popup blocked! Please allow popups for this site to launch the content.");
+                const htmlContent = await response.text();
+
+                // 2. Open the about:blank tab
+                let win = window.open('about:blank', '_blank');
+
+                // 3. Inject the fetched HTML into the new tab
+                if (win) {
+                    win.document.open();
+                    win.document.write(htmlContent);
+                    win.document.close();
+                    
+                    // Disguise the tab title
+                    win.document.title = "Dashboard"; 
+                } else {
+                    alert("Popup blocked! Please allow popups to launch.");
+                }
+            } catch (error) {
+                console.error("Error loading game:", error);
+                alert("Could not load the game. Make sure " + filename + " exists in the studies folder.");
             }
         }
     </script>
