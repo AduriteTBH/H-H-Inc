@@ -5,85 +5,236 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <style>
+        /* Base Dark Theme & Font */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            text-align: center;
-            padding: 40px;
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #ffffff;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        /* Creates a neat grid for your games */
+        /* Animated Background Orbs to make the Glass pop */
+        .bg-orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+            animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .orb-1 {
+            width: 400px; height: 400px;
+            background: rgba(99, 102, 241, 0.4); /* Indigo */
+            top: -100px; left: -100px;
+        }
+        .orb-2 {
+            width: 500px; height: 500px;
+            background: rgba(168, 85, 247, 0.3); /* Purple */
+            bottom: -150px; right: -100px;
+            animation-delay: -5s;
+        }
+        .orb-3 {
+            width: 300px; height: 300px;
+            background: rgba(14, 165, 233, 0.3); /* Ocean Blue */
+            top: 40%; left: 50%; transform: translate(-50%, -50%);
+            animation-duration: 25s;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 50px) scale(1.2); }
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            margin-top: 8vh;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin: 0;
+            letter-spacing: 2px;
+            background: linear-gradient(to right, #a855f7, #6366f1, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+        }
+
+        p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        /* Glassmorphism Grid Layout */
         .game-grid {
             display: flex;
             flex-wrap: wrap;
-            gap: 20px;
+            gap: 30px;
             justify-content: center;
-            margin-top: 30px;
-        }
-
-        .game-card {
-            background: #fff;
+            max-width: 1000px;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            width: 220px;
+            z-index: 1;
         }
 
-        h3 { margin-top: 0; color: #2c3e50; }
+        /* The Glass Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 25px;
+            width: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
 
+        /* Staggered load animation for cards */
+        .glass-card:nth-child(1) { animation-delay: 0.1s; }
+        .glass-card:nth-child(2) { animation-delay: 0.2s; }
+        .glass-card:nth-child(3) { animation-delay: 0.3s; }
+
+        .glass-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 40px 0 rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            margin: 0 0 10px 0;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .card-desc {
+            font-size: 0.85rem;
+            color: #64748b;
+            margin-bottom: 25px;
+            line-height: 1.4;
+        }
+
+        /* Premium Button */
         .launch-btn {
-            background-color: #007bff;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(168, 85, 247, 0.8));
             color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: bold;
-            border-radius: 5px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 12px;
             cursor: pointer;
             width: 100%;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
         }
 
-        .launch-btn:hover { background-color: #0056b3; }
+        .launch-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .launch-btn:hover::before {
+            left: 100%;
+        }
+
+        .launch-btn:hover {
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.6);
+            transform: scale(1.05);
+        }
+
+        /* Page Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-    <h1>Study Modules</h1>
-    <p>Select a module below to launch.</p>
+    <div class="bg-orb orb-1"></div>
+    <div class="bg-orb orb-2"></div>
+    <div class="bg-orb orb-3"></div>
+
+    <header>
+        <h1>H&H LAUNCHER</h1>
+        <p>SECURE MODULE ACCESS</p>
+    </header>
     
-    <div class="game-grid">
+    <main class="game-grid">
         
-        <div class="game-card">
-            <h3>Math Blaster</h3>
-            <button class="launch-btn" onclick="launchGame('game1.html')">Launch</button>
+        <div class="glass-card">
+            <div>
+                <div class="card-icon">🚀</div>
+                <h3>Math Blaster</h3>
+                <div class="card-desc">Advanced algebraic simulations and logic puzzles.</div>
+            </div>
+            <button class="launch-btn" onclick="launchGame('game1.html')">INITIALIZE</button>
         </div>
 
-        <div class="game-card">
-            <h3>History Quiz</h3>
-            <button class="launch-btn" onclick="launchGame('game2.html')">Launch</button>
+        <div class="glass-card">
+            <div>
+                <div class="card-icon">⚡</div>
+                <h3>History Quiz</h3>
+                <div class="card-desc">Interactive historical timeline exploration module.</div>
+            </div>
+            <button class="launch-btn" onclick="launchGame('game2.html')">INITIALIZE</button>
         </div>
 
+        <div class="glass-card">
+            <div>
+                <div class="card-icon">🧬</div>
+                <h3>Science Lab</h3>
+                <div class="card-desc">Physics and chemistry engine testing environment.</div>
+            </div>
+            <button class="launch-btn" onclick="launchGame('game3.html')">INITIALIZE</button>
         </div>
+
+    </main>
 
     <script>
-        // This function fetches the file from the 'studies' folder and opens it
+        // Core Launcher Logic - Fetches from 'studies' folder and cloaks in about:blank
         async function launchGame(filename) {
             try {
-                // 1. Fetch the HTML content from the studies folder
                 const response = await fetch('studies/' + filename);
                 
                 if (!response.ok) {
-                    throw new Error('File not found');
+                    throw new Error('Module file not found');
                 }
                 
                 const htmlContent = await response.text();
-
-                // 2. Open the about:blank tab
                 let win = window.open('about:blank', '_blank');
 
-                // 3. Inject the fetched HTML into the new tab
                 if (win) {
                     win.document.open();
                     win.document.write(htmlContent);
@@ -92,11 +243,11 @@
                     // Disguise the tab title
                     win.document.title = "Dashboard"; 
                 } else {
-                    alert("Popup blocked! Please allow popups to launch.");
+                    alert("System Notice: Popup blocked. Please allow popups to initialize modules.");
                 }
             } catch (error) {
-                console.error("Error loading game:", error);
-                alert("Could not load the game. Make sure " + filename + " exists in the studies folder.");
+                console.error("Initialization Error:", error);
+                alert("Error: Could not locate " + filename + " in the studies directory.");
             }
         }
     </script>
